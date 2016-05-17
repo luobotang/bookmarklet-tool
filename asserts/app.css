@@ -1,0 +1,55 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body, button, input {
+	font: 14px/1.7 arial, "Microsoft Yahei", sans-serif;
+	color: #333;
+}
+
+body {
+	background: #f7f7f7;
+}
+
+p {
+	margin-bottom: 0.5em;
+}
+
+.container {
+	margin: 0 auto;
+	width: 800px;
+}
+
+.code-box {
+	margin: 10px;
+}
+	.code-box textarea {
+		display: block;
+		width: 100%;
+		min-height: 300px;
+		margin-bottom: 10px;
+		padding: 10px;
+		font: 14px/1.5 consolas, monospace;
+		background: #fff;
+		box-sizing: border-box;
+	}
+	.code-box button {
+		padding: 5px 10px;
+	}
+
+.result-item {
+	margin: 10px;
+	padding: 10px;
+	border: 1px solid #e5e5e5;
+	background: #fff;
+}
+	.result-item pre {
+		padding-top: 10px;
+		border-top: 1px solid #e5e5e5;
+		overflow-x: auto;
+	}
+	.result-item code {
+		font: 14px/1.5 consolas, monospace;
+		white-space: pre-line;
+	}

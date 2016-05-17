@@ -1,0 +1,19 @@
+{
+  "name": "bookmarklet-tool",
+  "version": "0.1.0",
+  "description": "bookmarklet tool",
+  "main": "app.html",
+  "scripts": {
+    "test": "start app.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luobotang/bookmarklet-tool.git"
+  },
+  "author": "luobotang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/luobotang/bookmarklet-tool/issues"
+  },
+  "homepage": "https://github.com/luobotang/bookmarklet-tool#readme"
+}

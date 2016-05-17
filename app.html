@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Bookmarklet Generator Tool</title>
+<style>
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body, button, input {
+	font: 14px/1.7 arial, "Microsoft Yahei", sans-serif;
+	color: #333;
+}
+
+body {
+	background: #f7f7f7;
+}
+
+p {
+	margin-bottom: 0.5em;
+}
+
+.container {
+	margin: 0 auto;
+	width: 800px;
+}
+
+.code-box {
+	margin: 10px;
+}
+.code-box textarea {
+	display: block;
+	width: 100%;
+	min-height: 300px;
+	margin-bottom: 10px;
+	padding: 10px;
+	font: 14px/1.5 consolas, monospace;
+	background: #fff;
+	box-sizing: border-box;
+}
+.code-box button {
+	padding: 5px 10px;
+}
+
+.result-item {
+	margin: 10px;
+	padding: 10px;
+	border: 1px solid #e5e5e5;
+	background: #fff;
+}
+.result-item pre {
+	padding-top: 10px;
+	border-top: 1px solid #e5e5e5;
+}
+.result-item code {
+	font: 14px/1.5 consolas, monospace;
+}
+</style>
+</head>
+<body>
+<div class="container">
+	<div class="code-box">
+		<textarea id="code" placeholder="your code here..."></textarea>
+		<button id="generate">Generate</button>
+	</div>
+	<div class="output-box" id="output"></div>
+</div>
+<script>
+(function () {
+	var $code = document.getElementById('code')
+	var $btn = document.getElementById('generate')
+	var $output = document.getElementById('output')
+
+	$btn.onclick = function () {
+		var code = $code.value
+		var codeHref = makeCodeHref(code)
+		var $result = makeResultElement(codeHref)
+		appendResultToOutputBox($result)
+	}
+
+	function makeCodeHref(code) {
+		return 'javascript:void((function(){' + escapeHtml(uglifyCode(code)) + '})())'
+	}
+
+	function makeResultElement(codeHref) {
+		var $result = document.createElement('div')
+		$result.className = 'result-item'
+		$result.innerHTML = (
+			'<p><a href="' + codeHref + '">Bookmarklet</a></p>' +
+			'<pre><code>' + codeHref + '</code></pre>'
+		)
+		return $result
+	}
+
+	function appendResultToOutputBox($result) {
+		var $firstChild = $output.children && $output.children[0]
+		if ($firstChild) {
+			$output.insertBefore($result, $firstChild)
+		} else {
+			$output.appendChild($result)
+		}
+	}
+
+	function uglifyCode(code) {
+		// TODO do better work
+		return code.replace(/\s+/g, ' ')
+	}
+
+	// escape-html v1.0.3 from NPM
+	var matchHtmlRegExp = /["'&<>]/;
+	function escapeHtml(string) {
+	  var str = '' + string;
+	  var match = matchHtmlRegExp.exec(str);
+
+	  if (!match) {
+	    return str;
+	  }
+
+	  var escape;
+	  var html = '';
+	  var index = 0;
+	  var lastIndex = 0;
+
+	  for (index = match.index; index < str.length; index++) {
+	    switch (str.charCodeAt(index)) {
+	      case 34: // "
+	        escape = '&quot;';
+	        break;
+	      case 38: // &
+	        escape = '&amp;';
+	        break;
+	      case 39: // '
+	        escape = '&#39;';
+	        break;
+	      case 60: // <
+	        escape = '&lt;';
+	        break;
+	      case 62: // >
+	        escape = '&gt;';
+	        break;
+	      default:
+	        continue;
+	    }
+
+	    if (lastIndex !== index) {
+	      html += str.substring(lastIndex, index);
+	    }
+
+	    lastIndex = index + 1;
+	    html += escape;
+	  }
+
+	  return lastIndex !== index
+	    ? html + str.substring(lastIndex, index)
+	    : html;
+	}
+})()
+</script>
+</body>
+</html>

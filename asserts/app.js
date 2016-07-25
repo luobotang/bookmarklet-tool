@@ -71,9 +71,18 @@ app.util.uglifyCode = function (code) {
 	return code
 }
 
+app.util.beforeParse = function (code) {
+  // support ES6 function expression like this (in one line, only one statement):
+  // (var1, ...) => { ... }
+  // replace to:
+  // function (var1, ...) { ... }
+  return code.replace(/\(([^()]+)\)\s*=>\s\{([^}]+)\}/g, 'function ($1) {$2}')
+}
+
 
 app.init = (function () {
 	var escapeHtml = app.util.escapeHtml
+	var beforeParse = app.util.beforeParse
 	var uglifyCode = app.util.uglifyCode
 
 	var $code
@@ -94,7 +103,9 @@ app.init = (function () {
 	}
 
 	function makeCodeHref(code) {
-		return 'javascript:' + escapeHtml(uglifyCode('void((function(){' + code + '})())'))
+  	code = beforeParse(code)
+  	code = uglifyCode('void((function(){' + code + '})())')
+		return 'javascript:' + escapeHtml(code)
 	}
 
 	function makeResultElement(codeHref) {

@@ -63,12 +63,13 @@ app.util.escapeHtml = (function () {
  * - http://lisperator.net/uglifyjs/compress
  */
 app.util.uglifyCode = function (code) {
-	ast = UglifyJS.parse(code);
-	ast.figure_out_scope();
-	compressor = UglifyJS.Compressor();
-	ast = ast.transform(compressor);
-	code = ast.print_to_string();
-	return code
+	var ast = UglifyJS.parse(code)
+	ast.figure_out_scope()
+	ast.compute_char_frequency()
+  ast.mangle_names()
+	compressor = UglifyJS.Compressor()
+	ast = ast.transform(compressor)
+	return ast.print_to_string()
 }
 
 app.util.beforeParse = function (code) {
@@ -76,14 +77,22 @@ app.util.beforeParse = function (code) {
   // (var1, ...) => { ... }
   // replace to:
   // function (var1, ...) { ... }
-  return code.replace(/\(([^()]+)\)\s*=>\s\{([^}]+)\}/g, 'function ($1) {$2}')
+  return code.replace(/\(([^()]+)\)\s*=>\s*\{([^}]+)\}/g, 'function ($1) {$2}')
 }
 
+app.util.afterParse = function (code) {
+  if (code[code.length - 1] === ';') {
+    return code.substr(0, code.length - 1)
+  } else {
+    return code
+  }
+}
 
 app.init = (function () {
 	var escapeHtml = app.util.escapeHtml
 	var beforeParse = app.util.beforeParse
 	var uglifyCode = app.util.uglifyCode
+	var afterParse = app.util.afterParse
 
 	var $code
 	var $btn
@@ -104,7 +113,8 @@ app.init = (function () {
 
 	function makeCodeHref(code) {
   	code = beforeParse(code)
-  	code = uglifyCode('void((function(){' + code + '})())')
+  	code = uglifyCode('void(function(){' + code + '}())')
+  	code = afterParse(code)
 		return 'javascript:' + escapeHtml(code)
 	}
 

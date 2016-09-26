@@ -2,9 +2,9 @@
   "name": "bookmarklet-tool",
   "version": "0.1.0",
   "description": "bookmarklet tool",
-  "main": "app.html",
+  "main": "index.html",
   "scripts": {
-    "test": "start app.html"
+    "test": "start index.html"
   },
   "repository": {
     "type": "git",

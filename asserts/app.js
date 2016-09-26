@@ -109,6 +109,15 @@ app.init = (function () {
       var $result = makeResultElement(codeHref)
       appendResultToOutputBox($result)
     }
+
+    $output.addEventListener('click', function (e) {
+      if (e.target.matches('.close')) {
+        var item = e.target.parentElement.parentElement
+        if (item.matches('.result-item')) {
+          item.parentElement.removeChild(item)
+        }
+      }
+    })
   }
 
   function makeCodeHref(code) {
@@ -122,7 +131,7 @@ app.init = (function () {
     var $result = document.createElement('div')
     $result.className = 'result-item'
     $result.innerHTML = (
-      '<p><a href="' + codeHref + '">Bookmarklet</a></p>' +
+      '<p><a href="' + codeHref + '">run</a><a class="close">×</a></p>' +
       '<pre><code>' + codeHref + '</code></pre>'
     )
     return $result

@@ -68,3 +68,15 @@ p {
 		font: 14px/1.5 consolas, monospace;
 		white-space: pre-line;
 	}
+
+@media screen and (max-width: 500px) {
+	.container {
+		width: auto;
+	}
+
+	.code-box button {
+		display: block;
+		width: 100%;
+		box-sizing: border-box;
+	}
+}

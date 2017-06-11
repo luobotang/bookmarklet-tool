@@ -1,6 +1,5 @@
 var app = app || {}
 
-
 app.util = app.util || {}
 app.util.escapeHtml = (function () {
 
@@ -56,43 +55,8 @@ app.util.escapeHtml = (function () {
   }
 })()
 
-/*
- * Use UglifyJS to 'uglify' the code
- * docs:
- * - http://lisperator.net/uglifyjs/
- * - http://lisperator.net/uglifyjs/compress
- */
-app.util.uglifyCode = function (code) {
-  var ast = UglifyJS.parse(code)
-  ast.figure_out_scope()
-  ast.compute_char_frequency()
-  ast.mangle_names()
-  compressor = UglifyJS.Compressor()
-  ast = ast.transform(compressor)
-  return ast.print_to_string()
-}
-
-app.util.beforeParse = function (code) {
-  // support ES6 function expression like this (in one line, only one statement):
-  // (var1, ...) => { ... }
-  // replace to:
-  // function (var1, ...) { ... }
-  return code.replace(/\(([^()]+)\)\s*=>\s*\{([^}]+)\}/g, 'function ($1) {$2}')
-}
-
-app.util.afterParse = function (code) {
-  if (code[code.length - 1] === ';') {
-    return code.substr(0, code.length - 1)
-  } else {
-    return code
-  }
-}
-
 app.init = (function () {
   var escapeHtml = app.util.escapeHtml
-  var beforeParse = app.util.beforeParse
-  var uglifyCode = app.util.uglifyCode
-  var afterParse = app.util.afterParse
 
   var $code
   var $btn
@@ -103,12 +67,15 @@ app.init = (function () {
     $btn = document.getElementById('generate')
     $output = document.getElementById('output')
 
-    $btn.onclick = function () {
-      var code = $code.value
-      var codeHref = makeCodeHref(code)
-      var $result = makeResultElement(codeHref)
-      appendResultToOutputBox($result)
-    }
+    $btn.addEventListener('click', function () {
+      makeCodeHref($code.value)
+        .then(escapeHtml)
+        .then(makeResultElement)
+        .then(appendResultToOutputBox)
+        .catch((e) => {
+          alert(`Failed to transform the code. ${e && e.message}`)
+        })
+    })
 
     $output.addEventListener('click', function (e) {
       if (e.target.matches('.close')) {
@@ -121,10 +88,18 @@ app.init = (function () {
   }
 
   function makeCodeHref(code) {
-    code = beforeParse(code)
-    code = uglifyCode('void(function(){' + code + '}())')
-    code = afterParse(code)
-    return 'javascript:' + escapeHtml(code)
+    return fetch('/transform', {
+      method: 'POST',
+      body: code
+    }).then(res => {
+      if (res.status >= 200 && res.status < 300) {
+        return res.text()
+      } else {
+        return res.text().then(text => {
+          throw new Error('Transform Failed: ' + text)
+        })
+      }
+    })
   }
 
   function makeResultElement(codeHref) {

@@ -4,7 +4,8 @@
   "description": "bookmarklet tool",
   "main": "index.html",
   "scripts": {
-    "test": "start index.html"
+    "test": "start index.html",
+    "start": "node server/index"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,14 @@
   "bugs": {
     "url": "https://github.com/luobotang/bookmarklet-tool/issues"
   },
-  "homepage": "https://github.com/luobotang/bookmarklet-tool#readme"
+  "homepage": "https://github.com/luobotang/bookmarklet-tool#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "buble": "^0.15.2",
+    "express": "^4.15.3",
+    "uglify-js": "^3.0.15"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0"
+  }
 }
